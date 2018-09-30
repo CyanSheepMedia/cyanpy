@@ -1,6 +1,6 @@
 #cyanpy - a collection of small but useful functions that I need quite often.
 
-#This functions save a dictionary to a file. 
+#This functions saves a dictionary to a file. 
 def dictToFile(aDict, fileName):
     file = open(fileName, 'w')
     file.write(str(aDict))
