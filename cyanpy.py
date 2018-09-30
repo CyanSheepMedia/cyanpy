@@ -6,7 +6,7 @@ def dictToFile(aDict, fileName):
     file.write(str(aDict))
     file.close()
 
-#This functions loads a dictions from a file.
+#This functions loads a dictionary from a file.
 def fileToDict(fileName):
     file = open(fileName, 'r')
     aDict = eval(file.read())
