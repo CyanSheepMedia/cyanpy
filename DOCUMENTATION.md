@@ -1,8 +1,8 @@
 # Documentation
 
-##Contents
-	*dictToFile*
-	*fileToDict*
+## Contents
+*dictToFile*    
+*fileToDict*
 
 ### dictToFile(*dict*, *fileName*)
 		Converts the dictionary into a string and stores it into a file.
