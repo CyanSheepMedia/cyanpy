@@ -1,7 +1,7 @@
 # Documentation
 
 ## Contents
-[*dictToFile*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#dicttofiledict-filename)
+[*dictToFile*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#dicttofiledict-filename)    
 [*fileToDict*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#filetodictfilename)
 
 ### dictToFile(*dict*, *fileName*)
