@@ -1,11 +1,11 @@
 # Documentation
 
 ## Contents
-*dictToFile*    
-*fileToDict*
+[*dictToFile*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#dicttofiledict-filename)
+[*fileToDict*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#filetodictfilename)
 
 ### dictToFile(*dict*, *fileName*)
-		Converts the dictionary into a string and stores it into a file.
+	Converts the dictionary into a string and stores it into a file.
 	
 ### fileToDict(*fileName*)
-		Opens a file and returns its contents as a dictionary.
+	Opens a file and returns its contents as a dictionary.
