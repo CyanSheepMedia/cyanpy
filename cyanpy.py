@@ -30,3 +30,12 @@ def fileToList(fileName):
     aList = file.readlines()
     file.close
     return aList
+
+#Works out the factor increase between the values of a base list and another list.
+#Returns a list with the scale factor of each point of data. Lists have to be the same length.
+def scaleFactor(baseList, actualList):
+    scaleFactors = []
+    for x in range(0, len(actualList)):
+        scale = actualList[x] / baseList[x]
+        scaleFactors.append(scale)
+    return scaleFactors
