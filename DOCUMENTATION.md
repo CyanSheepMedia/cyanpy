@@ -2,7 +2,7 @@
 
 ## Contents
 [*dictToFile*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#dicttofiledict-filename)    
-[*fileToDict*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#filetodictfilename)
+[*fileToDict*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#filetodictfilename)    
 [*scaleFactor*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#scalefactorbaselist-actuallist)
 
 ### dictToFile(*dict*, *fileName*)
