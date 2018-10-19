@@ -141,12 +141,45 @@ class textBox:
         topHalfCoords = [self.boxLocation[0], self.boxLocation[1], int(self.boxLocation[0] + self.boxSize[0]), int(self.boxLocation[1] + int(self.boxSize[1] / 2))]
         bottomHalfCoords = [self.boxLocation[0], int(self.boxLocation[1] + int(self.boxSize[1] / 2) + 1), int(self.boxLocation[0] + self.boxSize[0]), int(self.boxLocation[1] + self.boxSize[1])]
 
+        #We need to define the colours and coords for the arrows.
+        #For the arrow colour
+        arrowColour = [0,0,0]
+        if colour[0] < 128:
+            arrowColour[0] = colour[0] + 60
+        else:
+            arrowColour[0] = colour[0] - 60
+        if colour[1] < 128:
+            arrowColour[1] = colour[1] + 60
+        else:
+            arrowColour[1] = colour[1] - 60
+        if colour[2] < 128:
+            arrowColour[2] = colour[2] + 60
+        else:
+            arrowColour[2] = colour[2] - 60
+
+        #Next is the arrow coords
+        distanceFromEdge = int(self.boxSize[1] * 0.03)
+        centerOfBox = int(self.boxLocation[0] + (self.boxSize[0] / 2))
+
+        topArrow1 = (centerOfBox, int(self.boxLocation[1] + distanceFromEdge))
+        topArrow2 = (int(centerOfBox - distanceFromEdge), int(self.boxLocation[1] + (distanceFromEdge * 2)))
+        topArrow3 = (int(centerOfBox + distanceFromEdge), int(self.boxLocation[1] + (distanceFromEdge * 2)))
+        topArrowCoords = (topArrow1, topArrow2, topArrow3)
+
+        bottomArrow1 = (centerOfBox, int(self.boxLocation[1] + self.boxSize[1] - distanceFromEdge))
+        bottomArrow2 = (int(centerOfBox - distanceFromEdge), int(self.boxLocation[1] + self.boxSize[1] - (distanceFromEdge * 2)))
+        bottomArrow3 = (int(centerOfBox + distanceFromEdge), int(self.boxLocation[1] + self.boxSize[1] - (distanceFromEdge * 2)))
+        bottomArrowCoords = (bottomArrow1, bottomArrow2, bottomArrow3)
+
+        #THe actual mouse controls.
         if pos[0] >= topHalfCoords[0] and pos[1] >= topHalfCoords[1] and pos[0] <= topHalfCoords[2] and pos[1] <= topHalfCoords[3]:
+            pygame.draw.polygon(screen, arrowColour, (topArrowCoords))
             if mouse == (1,0,0):
                 if self.currentTopLine > int(0):
                     self.currentTopLine = self.currentTopLine - 1
                     
         if pos[0] >= bottomHalfCoords[0] and pos[1] >= bottomHalfCoords[1] and pos[0] <= bottomHalfCoords[2] and pos[1] <= bottomHalfCoords[3]:
+            pygame.draw.polygon(screen, arrowColour, (bottomArrowCoords))
             if mouse == (1,0,0):
                 if self.currentTopLine < int(len(linesList) - numOfLinesToBlit):
                     self.currentTopLine = self.currentTopLine + 1
