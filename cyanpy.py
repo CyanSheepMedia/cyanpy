@@ -1,5 +1,8 @@
 #cyanpy - a collection of small but useful functions that I need quite often.
 
+#cyanpy is designed for use with different other libraries.
+import pygame
+
 #This functions saves a dictionary to a file. 
 def dictToFile(aDict, fileName):
     file = open(fileName, 'w')
@@ -15,13 +18,12 @@ def fileToDict(fileName):
 
 #This functions saves the list to a file.
 def listToFile(aList, fileName):
-    print(str(len(aList)))
     file = open(fileName, 'w')
     for x in range(0, len(aList)):
         if x == int(len(aList)-1):
-            file.write(aList[x])
+            file.write(str(aList[x]))
         else:
-            file.write(aList[x] + str('\n'))
+            file.write(str(aList[x]) + str('\n'))
     file.close
             
 #This functions loads a list from a file.
@@ -39,3 +41,126 @@ def scaleFactor(baseList, actualList):
         scale = actualList[x] / baseList[x]
         scaleFactors.append(scale)
     return scaleFactors
+
+# //PYGAME FUNCTIONS//
+#The following functions are designed for use with Pygame.
+
+#This function allows you to print text into a box.
+class textBox:
+    def __init__(self, boxLocation, boxSize):
+        self.boxLocation = boxLocation
+        self.boxSize = boxSize
+        self.currentTopLine = int(0)
+
+    #No scroll is to be used if the text is short enough to fit within the decided box.
+    def noScroll(self, screen, text, font, fontSize, colour):
+        textFont = pygame.font.Font(font + '.ttf', fontSize)
+    
+        #First creates a list of all the words in the text.
+        wordsList = []
+        textLength = len(text)
+        currentWord = str('')
+        for x in range(0, textLength):
+            if text[x] == str(' '):
+                wordsList.append(currentWord)
+                currentWord = str('')
+            else:
+                currentWord = currentWord + text[x]
+                if x == int(textLength - 1):
+                    wordsList.append(currentWord)
+                    currentWord = str('')
+
+        #Then works out which words should go into each line. Based on the width of the box.
+        numOfWords = len(wordsList)
+        currentLine = str('')
+        linesList = []
+        for x in range(0, numOfWords):
+            wordWidth, wordHeight = textFont.size(wordsList[x])
+            currentLineWidth, currentLineHeight = textFont.size(currentLine) 
+            if int(currentLineWidth + wordWidth) <= self.boxSize[0]:
+                currentLine = currentLine + wordsList[x] + str(' ')
+                if x == int(numOfWords - 1):
+                    linesList.append(currentLine)
+            else:
+                linesList.append(currentLine)
+                currentLine = wordsList[x] + str(' ')
+
+        #Finally blits all the lines to the screen.
+        numOfLines = len(linesList)
+        for x in range(0, numOfLines):
+            textSurface = textFont.render(linesList[x], True, colour)
+            screen.blit(textSurface, (self.boxLocation[0], int(self.boxLocation[1] + int(wordHeight * x))))
+
+        pygame.display.update()
+
+    def clickScroll(self, screen, text, font, fontSize, colour, pos, mouse):
+        textFont = pygame.font.Font(font + '.ttf', fontSize)
+    
+        #First creates a list of all the words in the text.
+        wordsList = []
+        textLength = len(text)
+        currentWord = str('')
+        for x in range(0, textLength):
+            #print(x, textLength)
+            if text[x] == str(' '):
+                wordsList.append(currentWord)
+                currentWord = str('')
+            else:
+                currentWord = currentWord + text[x]
+                if x == int(textLength - 1):
+                    wordsList.append(currentWord)
+                    currentWord = str('')
+
+        #Then works out which words should go into each line. Based on the width of the box.
+        numOfWords = len(wordsList)
+        currentLine = str('')
+        linesList = []
+        for x in range(0, numOfWords):
+            wordWidth, wordHeight = textFont.size(wordsList[x])
+            currentLineWidth, currentLineHeight = textFont.size(currentLine) 
+            if int(currentLineWidth + wordWidth) <= self.boxSize[0]:
+                currentLine = currentLine + wordsList[x] + str(' ')
+                if x == int(numOfWords - 1):
+                    linesList.append(currentLine)
+            else:
+                linesList.append(currentLine)
+                currentLine = wordsList[x] + str(' ')
+                if x == int(numOfWords - 1):
+                    linesList.append(currentLine)
+                    
+        #Next we work out which lines to blit.
+        numOfLinesToBlit = int(self.boxSize[1] / wordHeight)
+    
+        for x in range(self.currentTopLine, int(numOfLinesToBlit + self.currentTopLine)):
+            if x < len(linesList):
+                textSurface = textFont.render(linesList[x], True, colour)
+                screen.blit(textSurface, (self.boxLocation[0], int(self.boxLocation[1] + int(wordHeight * (x - self.currentTopLine)))))
+
+        #Finally the controls for the text box.
+        #[Left Side, Top Side, Right Side, Bottom Side]
+        topHalfCoords = [self.boxLocation[0], self.boxLocation[1], int(self.boxLocation[0] + self.boxSize[0]), int(self.boxLocation[1] + int(self.boxSize[1] / 2))]
+        bottomHalfCoords = [self.boxLocation[0], int(self.boxLocation[1] + int(self.boxSize[1] / 2) + 1), int(self.boxLocation[0] + self.boxSize[0]), int(self.boxLocation[1] + self.boxSize[1])]
+
+        if pos[0] >= topHalfCoords[0] and pos[1] >= topHalfCoords[1] and pos[0] <= topHalfCoords[2] and pos[1] <= topHalfCoords[3]:
+            if mouse == (1,0,0):
+                if self.currentTopLine > int(0):
+                    self.currentTopLine = self.currentTopLine - 1
+                    
+        if pos[0] >= bottomHalfCoords[0] and pos[1] >= bottomHalfCoords[1] and pos[0] <= bottomHalfCoords[2] and pos[1] <= bottomHalfCoords[3]:
+            if mouse == (1,0,0):
+                if self.currentTopLine < int(len(linesList) - numOfLinesToBlit):
+                    self.currentTopLine = self.currentTopLine + 1
+        pygame.display.update()
+
+class betterMouse:
+    def __init__(self):
+        self.lastMouse = (0,0,0)
+        
+    def oneClick(self, mouse):
+        if mouse != self.lastMouse:
+            self.lastMouse = mouse
+            return mouse
+        else:
+            return (0,0,0)
+            
+            
