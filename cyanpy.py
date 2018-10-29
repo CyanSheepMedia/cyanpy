@@ -43,26 +43,17 @@ def binarySearch(aList, searchItem):
     checkVal = int(0)
     checkWord = halfOfList[midPoint]
     while findWord == True:
-        print('Length of list: ' + str(len(halfOfList)))
-        print('Currently checking word: ' + checkWord)
-        print('checkVal: ' + str(checkVal))
-        print('Length of current word: ' + str(len(checkWord)))
         if searchItem == checkWord:
-            print('Word is in list.')
             return True
         else:
             if len(halfOfList) == int(1):
-                print('Word not in list.')
                 return False
             elif len(halfOfList) == int(2):
                 if halfOfList[0] == searchItem:
-                    print('Word is in list.')
                     return True
                 elif halfOfList[1] == searchItem:
-                    print('Word is in list.')
                     return True
                 else:
-                    print('Word not in list!')
                     return False
             elif len(checkWord) == int(checkVal):
                 halfOfList = halfOfList[midPoint:]
