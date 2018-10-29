@@ -22,4 +22,4 @@
 ### scaleFactor(*baseList*, *actualList*)
 	Finds the scale factor from the base list to the actual list. 
 	Returns another list of all the scale factors.
-	Both lists have to be the same length.
+	Both lists have have the same number of values.
