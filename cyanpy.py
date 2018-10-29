@@ -30,8 +30,71 @@ def listToFile(aList, fileName):
 def fileToList(fileName):
     file = open(fileName,'r')
     aList = file.readlines()
+    for x in range(0, len(aList)):
+        aList[x] = aList[x].strip('\n')
     file.close
     return aList
+
+#This function is a binary search. Works the same as the linear search only is fast when doing really large lists.
+def binarySearch(aList, searchItem):
+    findWord = True
+    midPoint = int(len(aList)/2)
+    halfOfList = aList
+    checkVal = int(0)
+    checkWord = halfOfList[midPoint]
+    while findWord == True:
+        print('Length of list: ' + str(len(halfOfList)))
+        print('Currently checking word: ' + checkWord)
+        print('checkVal: ' + str(checkVal))
+        print('Length of current word: ' + str(len(checkWord)))
+        if searchItem == checkWord:
+            print('Word is in list.')
+            return True
+        else:
+            if len(halfOfList) == int(1):
+                print('Word not in list.')
+                return False
+            elif len(halfOfList) == int(2):
+                if halfOfList[0] == searchItem:
+                    print('Word is in list.')
+                    return True
+                elif halfOfList[1] == searchItem:
+                    print('Word is in list.')
+                    return True
+                else:
+                    print('Word not in list!')
+                    return False
+            elif len(checkWord) == int(checkVal):
+                halfOfList = halfOfList[midPoint:]
+                midPoint = int(len(halfOfList) / 2)
+                checkWord = halfOfList[midPoint]
+                checkVal = int(0)
+            elif len(searchItem) == int(checkVal):
+                halfOfList = halfOfList[:midPoint]
+                midPoint = int(len(halfOfList) / 2)
+                checkWord = halfOfList[midPoint]
+                checkVal = int(0)
+            elif ord(searchItem[checkVal]) < ord(checkWord[checkVal]):
+                halfOfList = halfOfList[:midPoint]
+                midPoint = int(len(halfOfList) / 2)
+                checkWord = halfOfList[midPoint]
+                checkVal = int(0)
+            elif ord(searchItem[checkVal]) > ord(checkWord[checkVal]):   
+                halfOfList = halfOfList[midPoint:]
+                midPoint = int(len(halfOfList) / 2)
+                checkWord = halfOfList[midPoint]
+                checkVal = int(0)
+            elif ord(searchItem[checkVal]) == ord(checkWord[checkVal]):
+                checkVal = checkVal + 1
+            else:
+                checkVal = int(0)
+                
+#This function is a linear search. Tells if an item is in a list.
+def linearSearch(aList, searchItem):
+    for x in range(0, len(aList)):
+        if searchItem == aList[x]:
+            return True
+    return False
 
 #Works out the factor increase between the values of a base list and another list.
 #Returns a list with the scale factor of each point of data. Lists have to be the same length.
@@ -185,6 +248,10 @@ class textBox:
                     self.currentTopLine = self.currentTopLine + 1
         pygame.display.update()
 
+    def typeText(self, screen, text, font, fontSize, colour, pos, mouse):
+        print(text)
+
+#Allows for different kind of mouse(1,0,0) positions.
 class betterMouse:
     def __init__(self):
         self.lastMouse = (0,0,0)
@@ -195,5 +262,29 @@ class betterMouse:
             return mouse
         else:
             return (0,0,0)
-            
-            
+
+#Allows you to easily make as many buttons as you want.
+class texturedButton:
+    def __init__(self, button, buttonHover):
+        self.buttons = {'button': button,
+                        'buttonHover': buttonHover
+                        }
+        self.activeButton = ('button')
+        self.buttonCoords = (0,0)
+        self.buttonSize = self.buttons['button'].get_rect().size
+
+    def update(self, screen, coords):
+        self.buttonCoords = coords
+        screen.blit(self.buttons[self.activeButton], self.buttonCoords)
+
+    #Tests if the button is being hovered and also pressed.
+    def buttonHover(self, pos, mouse):
+        if pos[0] > self.buttonCoords[0] and pos[0] < int(self.buttonSize[0] + self.buttonCoords[0]) and pos[1] > self.buttonCoords[1] and pos[1] < int(self.buttonSize[1] + self.buttonCoords[1]):
+            self.activeButton = ('buttonHover')
+            if mouse == (1,0,0):
+                return True
+            else:
+                return False
+        else:
+            self.activeButton = ('button')
+            return False
