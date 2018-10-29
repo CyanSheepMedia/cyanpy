@@ -10,16 +10,16 @@
 [*scaleFactor*](https://github.com/CyanSheepMedia/cyanpy/blob/master/DOCUMENTATION.md#scalefactorbaselist-actuallist)
 
 ### dictToFile(*dict*, *fileName*)
-	Converts the dictionary into a string and stores it into a file.
+	Converts the dictionary into a string and stores it into a text file.
 	
 ### fileToDict(*fileName*)
-	Opens a file and returns its contents as a dictionary.
+	Opens a text file and returns its contents as a dictionary.
 
 ### listToFile(*list*, *fileName*)
-	Adds each value of a list into a new line in a file. 
+	Adds each value of a list into a new line in a text file. 
 	
 ### fileToList(*filename*)
-	Opens a file returns each line as a single value of a list.
+	Opens a text file returns each line as a single value of a list.
 	
 ### binarySearch(*list*, *searchItem*)
 	Requires a list and a string.
