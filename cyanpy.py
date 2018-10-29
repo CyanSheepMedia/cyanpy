@@ -36,6 +36,7 @@ def fileToList(fileName):
     return aList
 
 #This function is a binary search. Works the same as the linear search only is fast when doing really large lists.
+#I admit this function looks messy and could probably be more efficient.
 def binarySearch(aList, searchItem):
     findWord = True
     midPoint = int(len(aList)/2)
