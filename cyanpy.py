@@ -1,6 +1,6 @@
 #cyanpy - a collection of small but useful functions that I need quite often.
 
-#cyanpy is designed for use with different other libraries.
+#cyanpy is designed for use with different libraries.
 import pygame
 
 #This functions saves a dictionary to a file. 
