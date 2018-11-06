@@ -111,6 +111,10 @@ class textBox:
         self.maxBlinker = int(200)
         self.lastBox = False
 
+        #What we need now:
+        self.printLetter = int(0)
+        self.printLine = int(0)
+
     #No scroll is to be used if the text is short enough to fit within the decided box.
     def noScroll(self, screen, text, font, fontSize, colour):
         try:
@@ -167,7 +171,6 @@ class textBox:
         textLength = len(text)
         currentWord = str('')
         for x in range(0, textLength):
-            #print(x, textLength)
             if text[x] == str(' '):
                 wordsList.append(currentWord)
                 currentWord = str('')
@@ -253,7 +256,6 @@ class textBox:
 
     #This function prints the text to the screen one letter at a time. Finishing with a "...". Click to move on to the next part.
     def clickDown(self, screen, text, font, fontSize, colour, pos, mouse):
-
         try:
             textFont = pygame.font.Font(font + '.ttf', fontSize)
         except OSError:
@@ -285,7 +287,7 @@ class textBox:
         if int(wordHeight * numOfLines > self.boxSize[1]):
             numOfLines = numOfLines - 1
                
-        #This tells us if the dots should appear or not.
+        #This tells us if the arrow should appear or not.
         if self.blinker == self.maxBlinker:
             self.blinker = int(0)
             showArrow = False
@@ -342,11 +344,13 @@ class textBox:
                     lineNumber = lineNumber + 1
 
         #Next we blit the text to the screen.
+        secondLast = False
         for x in range(0, numOfLines):
             try:
                 textSurface = textFont.render(linesList[x], True, colour)
             except IndexError:
-                self.lastBox = True
+                secondLast = True
+                #self.lastBox = True
                 break
             screen.blit(textSurface, (self.boxLocation[0], int(self.boxLocation[1] + int(wordHeight * (x - self.currentTopLine)))))
 
@@ -355,7 +359,139 @@ class textBox:
             if pos[0] > self.boxLocation[0] and pos[1] > self.boxLocation[1] and pos[0] < int(self.boxLocation[0] + self.boxSize[0]) and pos[1] < int(self.boxLocation[1] + self.boxSize[1]):
                 if mouse == (1,0,0):     
                     self.positionOfNextWord = nextWord
+                    if secondLast == True:
+                        self.lastBox = True
+        pygame.display.update()
+        
+    def typeText(self, screen, text, font, fontSize, colour, pos, mouse):
+        try:
+            textFont = pygame.font.Font(font + '.ttf', fontSize)
+        except OSError:
+            textFont = pygame.font.SysFont(font, fontSize)
 
+        #First creates a list of all the words in the text.
+        wordsList = []
+        textLength = len(text)
+        currentWord = str('')
+        for x in range(0, textLength):
+            if text[x] == str(' '):
+                wordsList.append(currentWord)
+                currentWord = str('')
+            else:
+                currentWord = currentWord + text[x]
+                if x == int(textLength - 1):
+                    wordsList.append(currentWord)
+                    currentWord = str('')
+
+        #Calculates the numbers of lines that can fit in the box.
+        wordHeight = textFont.size(wordsList[0])[1]
+        calcNumOfLines = True
+        numOfLines = int(1)
+        while calcNumOfLines == True:
+            if int(wordHeight * numOfLines) < self.boxSize[1]:
+                numOfLines = numOfLines + 1
+            else:
+                calcNumOfLines = False
+        if int(wordHeight * numOfLines > self.boxSize[1]):
+            numOfLines = numOfLines - 1
+
+        #This tells us if the arrow should appear or not.
+        if self.blinker == self.maxBlinker:
+            self.blinker = int(0)
+            showArrow = False
+        elif self.blinker < int(self.maxBlinker * 0.6):
+            showArrow = True
+        else:
+            showArrow = False
+        self.blinker = self.blinker + 1
+
+        #Calculates the size of the flashing down arrow and blits it.
+        arrowWidth, arrowHeight = textFont.size(str('...'))
+        spaceWidth = textFont.size(str(' '))[0]
+        arrow1 = (int(self.boxLocation[0] + self.boxSize[0] - spaceWidth - arrowWidth + int(arrowWidth * 0.2)), int(self.boxLocation[1] + int(arrowHeight * int(numOfLines - 1)) + int(arrowHeight * 0.2)))
+        arrow2 = (int(self.boxLocation[0] + self.boxSize[0] - spaceWidth - int(arrowWidth * 0.2)), int(self.boxLocation[1] + int(arrowHeight * int(numOfLines - 1)) + int(arrowHeight * 0.2)))
+        arrow3 = (int(self.boxLocation[0] + self.boxSize[0] - spaceWidth - int(arrowWidth * 0.5)), int(self.boxLocation[1] + int(arrowHeight * numOfLines)) - int(arrowHeight * 0.2))
+        arrowCoords = (arrow1, arrow2, arrow3)
+        if showArrow == True and self.lastBox == False:
+            pygame.draw.polygon(screen, colour, (arrowCoords))
+
+        #Calculates the lines which can be printed.
+        linesList = []
+        calcLines = True
+        currentLine = str('')
+        lineNumber = int(1)
+        nextWord = self.positionOfNextWord
+        dotDotDotWidth = textFont.size(str('...  '))[0]
+        while calcLines == True:
+            
+            try:
+                wordWidth, wordHeight = textFont.size(wordsList[nextWord])
+            except IndexError:
+                linesList.append(currentLine)
+                currentLine = str('')
+                lineNumber = lineNumber + 1
+                calcLines = False
+                break
+            currentLineWidth, currentLineHeight = textFont.size(currentLine)
+            if lineNumber == numOfLines:
+                if int(currentLineWidth + wordWidth) <= int(self.boxSize[0] - dotDotDotWidth):
+                    currentLine = currentLine + wordsList[nextWord] + str(' ')
+                    nextWord = nextWord + 1
+                else:  
+                    linesList.append(currentLine)
+                    currentLine = str('')
+                    lineNumber = lineNumber + 1
+                    calcLines = False
+            else:
+                if int(currentLineWidth + wordWidth) <= self.boxSize[0]:
+                    currentLine = currentLine + wordsList[nextWord] + str(' ')
+                    nextWord = nextWord + 1
+                else:
+                    linesList.append(currentLine)
+                    currentLine = str('')
+                    lineNumber = lineNumber + 1
+
+        #Next we work out how much of the given line can be blitted.
+        try:
+            if self.printLetter == len(linesList[self.printLine]):
+                self.printLetter = int(0)
+                self.printLine = self.printLine + 1
+            reachedLimit = False
+        except IndexError:
+            self.printLine = int(self.printLine)
+            reachedLimit = True
+ 
+        #Next we blit the text to the screen.
+        for x in range(0, int(self.printLine + 1)):
+            try:
+                if x == int(self.printLine):
+                    textSurface = textFont.render(linesList[x][0:self.printLetter], True, colour)                    
+                else:
+                    textSurface = textFont.render(linesList[x], True, colour)
+            except IndexError:
+                break
+            screen.blit(textSurface, (self.boxLocation[0], int(self.boxLocation[1] + int(wordHeight * (x - self.currentTopLine)))))
+                
+        if self.blinker % 2 == 0:
+            self.printLetter = int(self.printLetter + 1)
+
+        #Mouse clicking control.
+        if self.lastBox != True:
+            if pos[0] > self.boxLocation[0] and pos[1] > self.boxLocation[1] and pos[0] < int(self.boxLocation[0] + self.boxSize[0]) and pos[1] < int(self.boxLocation[1] + self.boxSize[1]):
+                if reachedLimit == True:
+                    if mouse == (1,0,0):
+                        if nextWord != len(wordsList) and self.lastBox != True:
+                            self.positionOfNextWord = nextWord
+                        else:
+                            self.positionOfNextWord = nextWord
+                            self.lastBox = True
+                        self.printLine = int(0)
+                        self.printLetter = int(0)
+                else:
+                    if mouse == (1,0,0):     
+                        self.printLine = numOfLines
+        pygame.display.update()
+        
 #Allows for different kind of mouse(1,0,0) positions.
 class betterMouse:
     def __init__(self):
@@ -377,10 +513,14 @@ class texturedButton:
         self.activeButton = ('button')
         self.buttonCoords = (0,0)
         self.buttonSize = self.buttons['button'].get_rect().size
+        self.isTick = False
 
     def update(self, screen, coords):
         self.buttonCoords = coords
-        screen.blit(self.buttons[self.activeButton], self.buttonCoords)
+        if self.isTick == True:
+            screen.blit(self.tickButton[self.activeButton], self.buttonCoords)
+        else:    
+            screen.blit(self.buttons[self.activeButton], self.buttonCoords)
 
     #Tests if the button is being hovered and also pressed.
     def buttonHover(self, pos, mouse):
@@ -393,3 +533,22 @@ class texturedButton:
         else:
             self.activeButton = ('button')
             return False
+
+    def tickBox(self, tickButton, tickButtonHover):
+        self.tickButton = {'button': tickButton,
+                           'buttonHover': tickButtonHover
+                           }
+        self.isTick = True
+
+    def tickBoxHover(self, pos, mouse):
+        if pos[0] > self.buttonCoords[0] and pos[0] < int(self.buttonSize[0] + self.buttonCoords[0]) and pos[1] > self.buttonCoords[1] and pos[1] < int(self.buttonSize[1] + self.buttonCoords[1]):
+            self.activeButton = ('buttonHover')
+            if mouse == (1,0,0):
+                if self.isTick == True:
+                    self.isTick = False
+                else:
+                    self.isTick = True
+        else:
+            self.activeButton = ('button')
+        return self.isTick
+        
